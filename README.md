@@ -66,13 +66,3 @@ See [`documentation/`](./documentation) for a deeper look at the architecture, d
 | `npm run dev`      | Start the local dev server with hot reload |
 | `npm run build`    | Build a production bundle into `dist/`     |
 | `npm run preview`  | Preview the production build locally       |
-
-## Contributing
-
-1. Fork or clone the repo and follow the Local setup steps above.
-2. Create a branch for your change: `git checkout -b your-branch-name`.
-3. Make your changes and confirm `npm run build` completes without errors.
-4. Never commit `.env`, `.env.local`, or any file containing a real API key. `.gitignore` already excludes these, but double-check `git status` before committing.
-5. Open a pull request describing what changed and why.
-
-There is currently no linter or test suite configured, so please keep changes focused and manually verify the app in the browser (`npm run dev`) before opening a pull request.
