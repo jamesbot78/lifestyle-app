@@ -43,8 +43,8 @@ export function MuscleMapView({ workoutLog, workoutHistory, sex, exerciseLibrary
       <circle cx="150" cy="30" r="20" />
       <path d="M138,46 L162,46 L160,60 L140,60 Z" />
       <path d="M92,54 Q150,44 208,54 L200,150 Q150,160 100,150 Z" />
-      <rect x="82" y="60" width="34" height="104" rx="15" />
-      <rect x="184" y="60" width="34" height="104" rx="15" />
+      <rect x="0" y="38" width="96" height="52" rx="15" />
+      <rect x="204" y="38" width="96" height="52" rx="15" />
       <rect x="98" y="140" width="104" height="52" rx="20" />
       <rect x="108" y="146" width="42" height="172" rx="18" />
       <rect x="150" y="146" width="42" height="172" rx="18" />
@@ -52,13 +52,14 @@ export function MuscleMapView({ workoutLog, workoutHistory, sex, exerciseLibrary
   );
 
   // zone definitions: muscle name -> SVG path/shape per view.
-  // Arms hang alongside the torso (not outstretched) so every edge below
-  // lines up with its neighbor by exact coordinate, not by eye.
+  // Arms are outstretched in a T-pose. Each arm's shoulder edge lines up
+  // exactly with the shoulder joint circle, and the bicep/forearm segments
+  // share an exact edge at the elbow so there's no gap between them.
   const frontZones = [
     { muscle: "Shoulders", d: "M94,60 a12,12 0 1,0 24,0 a12,12 0 1,0 -24,0 M182,60 a12,12 0 1,0 24,0 a12,12 0 1,0 -24,0" },
     { muscle: "Chest", d: "M120,58 Q150,50 180,58 Q184,81 177,104 Q150,98 123,104 Q116,81 120,58 Z" },
-    { muscle: "Biceps", d: "M96,66 L122,66 Q126,90 118,114 L92,114 Q84,90 96,66 Z M204,66 L178,66 Q174,90 182,114 L208,114 Q216,90 204,66 Z" },
-    { muscle: "Forearms", d: "M92,114 L118,114 Q120,137 114,160 L88,160 Q82,137 92,114 Z M208,114 L182,114 Q180,137 186,160 L212,160 Q218,137 208,114 Z" },
+    { muscle: "Biceps", d: "M94,55 L94,81 Q67,85 40,77 L40,51 Q67,43 94,55 Z M206,55 L206,81 Q233,85 260,77 L260,51 Q233,43 206,55 Z" },
+    { muscle: "Forearms", d: "M40,51 L40,77 Q23,79 6,73 L6,47 Q23,41 40,51 Z M260,51 L260,77 Q277,79 294,73 L294,47 Q277,41 260,51 Z" },
     { muscle: "Abs", d: "M130,104 L170,104 Q172,125 166,146 L134,146 Q128,125 130,104 Z" },
     { muscle: "Obliques", d: "M123,104 L130,104 L126,146 L119,146 Q116,125 123,104 Z M177,104 L170,104 L174,146 L181,146 Q184,125 177,104 Z" },
     { muscle: "Quads", d: "M120,150 L146,150 Q150,188 142,226 L116,226 Q108,188 120,150 Z M180,150 L154,150 Q150,188 158,226 L184,226 Q192,188 180,150 Z" },
@@ -68,8 +69,8 @@ export function MuscleMapView({ workoutLog, workoutHistory, sex, exerciseLibrary
     { muscle: "Shoulders", d: "M94,60 a12,12 0 1,0 24,0 a12,12 0 1,0 -24,0 M182,60 a12,12 0 1,0 24,0 a12,12 0 1,0 -24,0" },
     { muscle: "Upper back", d: "M120,58 Q150,50 180,58 Q184,74 178,90 Q150,96 122,90 Q116,74 120,58 Z" },
     { muscle: "Lats", d: "M118,90 L142,90 Q146,110 138,130 L114,130 Q108,110 118,90 Z M182,90 L158,90 Q154,110 162,130 L186,130 Q192,110 182,90 Z" },
-    { muscle: "Triceps", d: "M96,66 L122,66 Q126,90 118,114 L92,114 Q84,90 96,66 Z M204,66 L178,66 Q174,90 182,114 L208,114 Q216,90 204,66 Z" },
-    { muscle: "Forearms", d: "M92,114 L118,114 Q120,137 114,160 L88,160 Q82,137 92,114 Z M208,114 L182,114 Q180,137 186,160 L212,160 Q218,137 208,114 Z" },
+    { muscle: "Triceps", d: "M94,55 L94,81 Q67,85 40,77 L40,51 Q67,43 94,55 Z M206,55 L206,81 Q233,85 260,77 L260,51 Q233,43 206,55 Z" },
+    { muscle: "Forearms", d: "M40,51 L40,77 Q23,79 6,73 L6,47 Q23,41 40,51 Z M260,51 L260,77 Q277,79 294,73 L294,47 Q277,41 260,51 Z" },
     { muscle: "Lower back", d: "M126,130 L174,130 Q178,146 170,162 L130,162 Q122,146 126,130 Z" },
     { muscle: "Glutes", d: "M112,162 L188,162 Q194,179 184,196 L116,196 Q106,179 112,162 Z" },
     { muscle: "Hamstrings", d: "M120,196 L146,196 Q150,227 142,258 L116,258 Q108,227 120,196 Z M180,196 L154,196 Q150,227 158,258 L184,258 Q192,227 180,196 Z" },
