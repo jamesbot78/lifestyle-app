@@ -142,32 +142,32 @@ function getMealWarnings(meal, profile) {
   const mealAllergens = meal.allergens || [];
   const allergenLabels = { peanuts: "peanuts", tree_nuts: "tree nuts", shellfish: "shellfish", fish: "fish", eggs: "eggs", soy: "soy", wheat: "wheat", dairy: "dairy" };
   mealAllergens.forEach((a) => {
-    if (allergies.includes(a)) warnings.push(`Contains ${allergenLabels[a] || a} — you flagged this as an allergy`);
+    if (allergies.includes(a)) warnings.push(`Contains ${allergenLabels[a] || a}: you flagged this as an allergy`);
   });
 
   const pattern = profile.dietPattern;
   if (pattern === "vegan") {
-    if (meal.containsMeat) warnings.push("Contains meat — not vegan");
-    if (meal.containsFish) warnings.push("Contains fish — not vegan");
-    if (meal.containsEggs) warnings.push("Contains eggs — not vegan");
-    if (meal.containsDairy) warnings.push("Contains dairy — not vegan");
+    if (meal.containsMeat) warnings.push("Contains meat: not vegan");
+    if (meal.containsFish) warnings.push("Contains fish: not vegan");
+    if (meal.containsEggs) warnings.push("Contains eggs: not vegan");
+    if (meal.containsDairy) warnings.push("Contains dairy: not vegan");
   } else if (pattern === "vegetarian") {
-    if (meal.containsMeat) warnings.push("Contains meat — not vegetarian");
-    if (meal.containsFish) warnings.push("Contains fish — not vegetarian");
+    if (meal.containsMeat) warnings.push("Contains meat: not vegetarian");
+    if (meal.containsFish) warnings.push("Contains fish: not vegetarian");
   }
 
   const conditions = profile.conditions || [];
   if (conditions.includes("diabetes") && (meal.sugar || 0) > 20) {
-    warnings.push("High in sugar — worth watching with diabetes");
+    warnings.push("High in sugar: worth watching with diabetes");
   }
   if ((conditions.includes("heart_bp") || conditions.includes("kidney") || conditions.includes("cholesterol")) && (meal.sodium || 0) > 700) {
     warnings.push("High in sodium");
   }
   if (conditions.includes("celiac") && mealAllergens.includes("wheat")) {
-    warnings.push("Contains gluten — flagged for celiac / gluten sensitivity");
+    warnings.push("Contains gluten: flagged for celiac / gluten sensitivity");
   }
   if (conditions.includes("lactose") && mealAllergens.includes("dairy")) {
-    warnings.push("Contains dairy — flagged for lactose intolerance");
+    warnings.push("Contains dairy: flagged for lactose intolerance");
   }
   return warnings;
 }
@@ -207,7 +207,7 @@ function getExerciseWarning(exerciseName, profile) {
 
   for (const c of checks) {
     if (c.test && injuries.some((i) => c.keys.includes(i))) {
-      return `This may stress ${c.label} — you flagged a related injury or surgery. Check with your doctor or go easy.`;
+      return `This may stress ${c.label}: you flagged a related injury or surgery. Check with your doctor or go easy.`;
     }
   }
   return null;
@@ -779,20 +779,20 @@ function MuscleMapView({ workoutLog, workoutHistory, sex, exerciseLibrary, onQui
   const zones = view === "front" ? frontZones : backZones;
 
   const MUSCLE_INFO = {
-    "Shoulders": { desc: "Deltoids \u2014 cap the shoulder joint and lift/rotate the arm.", suggest: ["Overhead press", "Lateral raise", "Arnold press"] },
-    "Chest": { desc: "Pectorals \u2014 push muscles across the front of the chest.", suggest: ["Bench press", "Push ups", "Chest fly"] },
-    "Biceps": { desc: "Front of the upper arm \u2014 bends the elbow.", suggest: ["Bicep curl", "Hammer curl", "Chin ups"] },
-    "Triceps": { desc: "Back of the upper arm \u2014 straightens the elbow.", suggest: ["Tricep pushdown", "Skullcrusher", "Dips"] },
+    "Shoulders": { desc: "Deltoids, cap the shoulder joint and lift/rotate the arm.", suggest: ["Overhead press", "Lateral raise", "Arnold press"] },
+    "Chest": { desc: "Pectorals, push muscles across the front of the chest.", suggest: ["Bench press", "Push ups", "Chest fly"] },
+    "Biceps": { desc: "Front of the upper arm, bends the elbow.", suggest: ["Bicep curl", "Hammer curl", "Chin ups"] },
+    "Triceps": { desc: "Back of the upper arm, straightens the elbow.", suggest: ["Tricep pushdown", "Skullcrusher", "Dips"] },
     "Forearms": { desc: "Controls grip strength and wrist movement.", suggest: ["Wrist curl", "Farmer's carry", "Dead hang"] },
-    "Abs": { desc: "Rectus abdominis \u2014 flexes the spine, front core.", suggest: ["Crunch", "Plank", "Leg raise"] },
-    "Obliques": { desc: "Sides of the core \u2014 twisting and side-bending.", suggest: ["Russian twist", "Side plank", "Woodchop"] },
-    "Quads": { desc: "Front of the thigh \u2014 straightens the knee.", suggest: ["Squat", "Leg press", "Lunge"] },
-    "Hamstrings": { desc: "Back of the thigh \u2014 bends the knee, extends the hip.", suggest: ["Romanian deadlift", "Leg curl", "Good morning"] },
-    "Glutes": { desc: "Buttocks \u2014 drives hip extension and power.", suggest: ["Hip thrust", "Squat", "Glute kickback"] },
-    "Calves": { desc: "Back of the lower leg \u2014 points the foot/toe.", suggest: ["Calf raise", "Jump rope", "Seated calf raise"] },
-    "Lats": { desc: "Latissimus dorsi \u2014 wide back muscles, pulling motion.", suggest: ["Pulldown", "Pull ups", "Lat row"] },
-    "Upper back": { desc: "Traps and rhomboids \u2014 shoulder blade control.", suggest: ["Shrug", "Face pull", "Rear delt fly"] },
-    "Lower back": { desc: "Erector spinae \u2014 supports and extends the spine.", suggest: ["Back extension", "Good morning", "Deadlift"] },
+    "Abs": { desc: "Rectus abdominis, flexes the spine, front core.", suggest: ["Crunch", "Plank", "Leg raise"] },
+    "Obliques": { desc: "Sides of the core, twisting and side-bending.", suggest: ["Russian twist", "Side plank", "Woodchop"] },
+    "Quads": { desc: "Front of the thigh, straightens the knee.", suggest: ["Squat", "Leg press", "Lunge"] },
+    "Hamstrings": { desc: "Back of the thigh, bends the knee, extends the hip.", suggest: ["Romanian deadlift", "Leg curl", "Good morning"] },
+    "Glutes": { desc: "Buttocks, drives hip extension and power.", suggest: ["Hip thrust", "Squat", "Glute kickback"] },
+    "Calves": { desc: "Back of the lower leg, points the foot/toe.", suggest: ["Calf raise", "Jump rope", "Seated calf raise"] },
+    "Lats": { desc: "Latissimus dorsi, wide back muscles, pulling motion.", suggest: ["Pulldown", "Pull ups", "Lat row"] },
+    "Upper back": { desc: "Traps and rhomboids, shoulder blade control.", suggest: ["Shrug", "Face pull", "Rear delt fly"] },
+    "Lower back": { desc: "Erector spinae, supports and extends the spine.", suggest: ["Back extension", "Good morning", "Deadlift"] },
   };
 
   const muscleExercises = (exerciseLibrary || []).filter((ex) => {
@@ -1158,7 +1158,7 @@ function MicronutrientCard({ totals, open, onToggle }) {
               </div>
             );
           })}
-          <p style={{ margin: "4px 0 0", fontSize: 12, color: "var(--ink-soft)" }}>Estimated from your meal photos \u2014 rough guide only, not a substitute for lab testing.</p>
+          <p style={{ margin: "4px 0 0", fontSize: 12, color: "var(--ink-soft)" }}>Estimated from your meal photos, rough guide only, not a substitute for lab testing.</p>
         </div>
       )}
     </div>
@@ -1199,7 +1199,7 @@ function FastingTimer({ lastMealAt, fastGoalHours = 16 }) {
         <div style={{ height: "100%", width: `${pct * 100}%`, background: lerpColor(pct), borderRadius: 999, transition: "width 0.4s ease" }} />
       </div>
       <p style={{ margin: "6px 0 0", fontSize: 12, color: "var(--ink-soft)" }}>
-        {hoursSince >= fastGoalHours ? "Fasting goal reached \u2014 nice work." : `Since your last logged meal or drink.`}
+        {hoursSince >= fastGoalHours ? "Fasting goal reached, nice work." : `Since your last logged meal or drink.`}
       </p>
     </div>
   );
@@ -1915,7 +1915,7 @@ export default function App() {
       });
       setPendingExercise({ exerciseName: result.exerciseName || "Exercise", photo: thumb });
     } catch (err) {
-      setError("Couldn't read that photo — try again with better lighting.");
+      setError("Couldn't read that photo. Try again with better lighting.");
       setPendingExercise({ exerciseName: "Exercise", photo: null });
     }
     setBusy(null);
@@ -1951,7 +1951,7 @@ export default function App() {
       group: stalest,
       days,
       text: pick
-        ? `Haven't hit ${stalest.toLowerCase()} in ${days} days — maybe ${pick}?`
+        ? `Haven't hit ${stalest.toLowerCase()} in ${days} days, maybe ${pick}?`
         : `Haven't hit ${stalest.toLowerCase()} in ${days} days.`,
     };
   })();
@@ -1988,7 +1988,7 @@ export default function App() {
       ]);
       const result = await askClaude({
         imageBase64: b64,
-        text: "You are a nutrition estimator. Look at this photo of food or a drink and estimate it. If it is a drink, estimate fluid volume in cups (1 cup = 240ml) as fluidCups, and set isDrink to true. Also identify any of these allergens present: peanuts, tree_nuts, shellfish, fish, eggs, soy, wheat, dairy — return as an array of matching keys in allergens. Also estimate sugar in grams as sugar, and rough estimates for fiber (grams), iron (milligrams), vitaminC (milligrams), calcium (milligrams), and potassium (milligrams). Also set containsMeat, containsFish, containsEggs, containsDairy as booleans for dietary pattern checks. Respond with ONLY raw JSON, no markdown, no commentary, matching exactly: {\"name\": string (short meal or drink name), \"calories\": number, \"protein\": number (grams), \"carbs\": number (grams), \"fat\": number (grams), \"sodium\": number (milligrams), \"sugar\": number (grams), \"fiber\": number (grams), \"iron\": number (milligrams), \"vitaminC\": number (milligrams), \"calcium\": number (milligrams), \"potassium\": number (milligrams), \"isDrink\": boolean, \"fluidCups\": number, \"allergens\": array of strings, \"containsMeat\": boolean, \"containsFish\": boolean, \"containsEggs\": boolean, \"containsDairy\": boolean}",
+        text: "You are a nutrition estimator. Look at this photo of food or a drink and estimate it. If it is a drink, estimate fluid volume in cups (1 cup = 240ml) as fluidCups, and set isDrink to true. Also identify any of these allergens present: peanuts, tree_nuts, shellfish, fish, eggs, soy, wheat, dairy. Return as an array of matching keys in allergens. Also estimate sugar in grams as sugar, and rough estimates for fiber (grams), iron (milligrams), vitaminC (milligrams), calcium (milligrams), and potassium (milligrams). Also set containsMeat, containsFish, containsEggs, containsDairy as booleans for dietary pattern checks. Respond with ONLY raw JSON, no markdown, no commentary, matching exactly: {\"name\": string (short meal or drink name), \"calories\": number, \"protein\": number (grams), \"carbs\": number (grams), \"fat\": number (grams), \"sodium\": number (milligrams), \"sugar\": number (grams), \"fiber\": number (grams), \"iron\": number (milligrams), \"vitaminC\": number (milligrams), \"calcium\": number (milligrams), \"potassium\": number (milligrams), \"isDrink\": boolean, \"fluidCups\": number, \"allergens\": array of strings, \"containsMeat\": boolean, \"containsFish\": boolean, \"containsEggs\": boolean, \"containsDairy\": boolean}",
       });
       const now = new Date();
       const hour = now.getHours();
@@ -1997,7 +1997,7 @@ export default function App() {
       const entry = { id: Date.now(), timeValue, mealType: defaultType, photo: thumb, rating: null, ...result };
       saveLog([...log, entry]);
     } catch (err) {
-      setError("Couldn't read that photo — try again with better lighting.");
+      setError("Couldn't read that photo. Try again with better lighting.");
     }
     setBusy(null);
   }
@@ -2017,7 +2017,7 @@ export default function App() {
       const fresh = (result.items || []).filter((i) => !existingNames.has(i.name.toLowerCase()));
       savePantry([...pantry, ...fresh.map((i) => ({ ...i, id: Date.now() + Math.random() }))]);
     } catch (err) {
-      setError("Couldn't read that photo — try again with better lighting.");
+      setError("Couldn't read that photo. Try again with better lighting.");
     }
     setBusy(null);
   }
@@ -2050,10 +2050,10 @@ export default function App() {
       const conditions = profile.conditions || [];
       const allergies = profile.allergies || [];
       const healthLine = (conditions.length || allergies.length || (profile.dietPattern && profile.dietPattern !== "none"))
-        ? ` Important health constraints: my remaining sodium budget today is ${remaining.sodium}mg. ${allergies.length ? `I am allergic to or must avoid: ${allergies.join(", ")} — never suggest a meal containing these.` : ""} ${profile.dietPattern && profile.dietPattern !== "none" ? `My dietary pattern is ${profile.dietPattern} — only suggest meals that fit this.` : ""} ${conditions.includes("diabetes") ? "I am diabetic, so prefer lower-sugar options." : ""} ${conditions.includes("celiac") ? "I have celiac disease or gluten sensitivity, so avoid gluten." : ""} ${conditions.includes("lactose") ? "I am lactose intolerant, so avoid dairy." : ""}`
+        ? ` Important health constraints: my remaining sodium budget today is ${remaining.sodium}mg. ${allergies.length ? `I am allergic to or must avoid: ${allergies.join(", ")}. Never suggest a meal containing these.` : ""} ${profile.dietPattern && profile.dietPattern !== "none" ? `My dietary pattern is ${profile.dietPattern}. Only suggest meals that fit this.` : ""} ${conditions.includes("diabetes") ? "I am diabetic, so prefer lower-sugar options." : ""} ${conditions.includes("celiac") ? "I have celiac disease or gluten sensitivity, so avoid gluten." : ""} ${conditions.includes("lactose") ? "I am lactose intolerant, so avoid dairy." : ""}`
         : "";
       const result = await askClaude({
-        text: `I need one meal suggestion to help hit my remaining daily targets: ${remaining.calories} calories, ${remaining.protein}g protein, ${remaining.carbs}g carbs, ${remaining.fat}g fat remaining today. My pantry/fridge currently has: ${pantry.length ? pantry.map((p) => p.name).join(", ") : "nothing logged yet"}. Suggest ONE realistic meal using mostly what I already have.${preferenceLine}${healthLine} Respond with ONLY raw JSON, no markdown: {"meal": string (name), "why": string (1 short sentence on how it fits my remaining macros), "ingredients": [string] (every ingredient needed for this exact meal WITH specific quantities so I know how much to actually make, e.g. "150g chicken breast", "1 cup cooked rice", "100g Greek yogurt" — quantities should be sized so the meal totals the stated calories), "uses": [string] (pantry items it uses), "missing": [string] (up to 4 ingredients I'd need to buy, empty array if none)}`,
+        text: `I need one meal suggestion to help hit my remaining daily targets: ${remaining.calories} calories, ${remaining.protein}g protein, ${remaining.carbs}g carbs, ${remaining.fat}g fat remaining today. My pantry/fridge currently has: ${pantry.length ? pantry.map((p) => p.name).join(", ") : "nothing logged yet"}. Suggest ONE realistic meal using mostly what I already have.${preferenceLine}${healthLine} Respond with ONLY raw JSON, no markdown: {"meal": string (name), "why": string (1 short sentence on how it fits my remaining macros), "ingredients": [string] (every ingredient needed for this exact meal WITH specific quantities so I know how much to actually make, e.g. "150g chicken breast", "1 cup cooked rice", "100g Greek yogurt", quantities should be sized so the meal totals the stated calories), "uses": [string] (pantry items it uses), "missing": [string] (up to 4 ingredients I'd need to buy, empty array if none)}`,
       });
       let addedIds = [];
       if (result.missing && result.missing.length) {
@@ -2066,7 +2066,7 @@ export default function App() {
       }
       setSuggestion({ ...result, addedShoppingIds: addedIds });
     } catch (err) {
-      setError("Couldn't come up with a suggestion \u2014 give it another try.");
+      setError("Couldn't come up with a suggestion. Give it another try.");
     }
     setBusy(null);
   }
@@ -2090,10 +2090,10 @@ export default function App() {
       const conditions = profile.conditions || [];
       const allergies = profile.allergies || [];
       const healthLine = (conditions.length || allergies.length || (profile.dietPattern && profile.dietPattern !== "none"))
-        ? ` Important health constraints: my remaining sodium budget today is ${remaining.sodium}mg. ${allergies.length ? `I am allergic to or must avoid: ${allergies.join(", ")} \u2014 never suggest a meal containing these.` : ""} ${profile.dietPattern && profile.dietPattern !== "none" ? `My dietary pattern is ${profile.dietPattern} \u2014 only suggest meals that fit this.` : ""} ${conditions.includes("diabetes") ? "I am diabetic, so prefer lower-sugar options." : ""} ${conditions.includes("celiac") ? "I have celiac disease or gluten sensitivity, so avoid gluten." : ""} ${conditions.includes("lactose") ? "I am lactose intolerant, so avoid dairy." : ""}`
+        ? ` Important health constraints: my remaining sodium budget today is ${remaining.sodium}mg. ${allergies.length ? `I am allergic to or must avoid: ${allergies.join(", ")}. Never suggest a meal containing these.` : ""} ${profile.dietPattern && profile.dietPattern !== "none" ? `My dietary pattern is ${profile.dietPattern}. Only suggest meals that fit this.` : ""} ${conditions.includes("diabetes") ? "I am diabetic, so prefer lower-sugar options." : ""} ${conditions.includes("celiac") ? "I have celiac disease or gluten sensitivity, so avoid gluten." : ""} ${conditions.includes("lactose") ? "I am lactose intolerant, so avoid dairy." : ""}`
         : "";
       const result = await askClaude({
-        text: `I need a plan of meals to fill the REST of today, so that combined they roughly hit my remaining daily targets: ${remaining.calories} calories, ${remaining.protein}g protein, ${remaining.carbs}g carbs, ${remaining.fat}g fat remaining today. My pantry/fridge currently has: ${pantry.length ? pantry.map((p) => p.name).join(", ") : "nothing logged yet"}. Suggest 2 to 4 realistic remaining meals or snacks (fewer if it's late in the day) using mostly what I already have, that together add up close to my remaining targets without going over.${preferenceLine}${healthLine} Respond with ONLY raw JSON, no markdown: {"meals": [{"name": string, "why": string (1 short sentence), "calories": number, "ingredients": [string] (every ingredient needed for this exact meal WITH specific quantities, e.g. "2 eggs", "1 slice wholegrain toast", "1 banana" — sized so the meal totals the stated calories), "uses": [string], "missing": [string] (ingredients to buy, empty array if none)}]}`,
+        text: `I need a plan of meals to fill the REST of today, so that combined they roughly hit my remaining daily targets: ${remaining.calories} calories, ${remaining.protein}g protein, ${remaining.carbs}g carbs, ${remaining.fat}g fat remaining today. My pantry/fridge currently has: ${pantry.length ? pantry.map((p) => p.name).join(", ") : "nothing logged yet"}. Suggest 2 to 4 realistic remaining meals or snacks (fewer if it's late in the day) using mostly what I already have, that together add up close to my remaining targets without going over.${preferenceLine}${healthLine} Respond with ONLY raw JSON, no markdown: {"meals": [{"name": string, "why": string (1 short sentence), "calories": number, "ingredients": [string] (every ingredient needed for this exact meal WITH specific quantities, e.g. "2 eggs", "1 slice wholegrain toast", "1 banana", sized so the meal totals the stated calories), "uses": [string], "missing": [string] (ingredients to buy, empty array if none)}]}`,
       });
       const meals = result.meals || [];
       let addedIds = [];
@@ -2108,7 +2108,7 @@ export default function App() {
       }
       setDayPlan({ meals, addedShoppingIds: addedIds });
     } catch (err) {
-      setError("Couldn't plan the rest of your day \u2014 give it another try.");
+      setError("Couldn't plan the rest of your day. Give it another try.");
     }
     setBusy(null);
   }
@@ -2308,7 +2308,7 @@ export default function App() {
             />
 
             <p style={{ fontFamily: "Quicksand", fontWeight: 700, fontSize: 19, marginTop: 32, marginBottom: 4, color: "var(--ink)" }}>Logged today</p>
-            {log.length === 0 && <p style={{ color: "var(--ink-soft)", fontSize: 16 }}>Nothing logged yet — snap your first meal above.</p>}
+            {log.length === 0 && <p style={{ color: "var(--ink-soft)", fontSize: 16 }}>Nothing logged yet. Snap your first meal above.</p>}
             {["Breakfast", "Lunch", "Dinner"].map((section) => {
               const meals = log.filter((m) => (m.mealType || "Lunch") === section);
               const sectionCal = meals.reduce((s, m) => s + m.calories, 0);
@@ -2594,7 +2594,7 @@ export default function App() {
               </button>
             </div>
             {error && <p style={{ color: "var(--fat)" }}>{error}</p>}
-            {pantry.length === 0 && <p style={{ color: "#FFFFFF", fontSize: 16 }}>No items yet — scan your fridge to get started.</p>}
+            {pantry.length === 0 && <p style={{ color: "#FFFFFF", fontSize: 16 }}>No items yet. Scan your fridge to get started.</p>}
             <div
               style={{
                 background: "radial-gradient(circle at 50% 20%, #2c2c2c 0%, #0a0a0a 75%)",
