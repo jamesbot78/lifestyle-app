@@ -1,4 +1,4 @@
-export async function askClaude({ text, imageBase64, maxTokens = 1000 }) {
+export async function askClaude({ text, imageBase64, maxTokens = 1000, apiKey, provider }) {
   const content = [];
   if (imageBase64) {
     content.push({ type: "image", source: { type: "base64", media_type: "image/jpeg", data: imageBase64 } });
@@ -8,7 +8,7 @@ export async function askClaude({ text, imageBase64, maxTokens = 1000 }) {
   const response = await fetch("/api/ask-claude", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ content, maxTokens }),
+    body: JSON.stringify({ content, maxTokens, apiKey, provider }),
   });
   const data = await response.json();
   if (!response.ok) {

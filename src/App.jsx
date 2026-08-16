@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Loader2, Utensils, Dumbbell, ShoppingBasket, ListChecks, Settings, TrendingUp } from "lucide-react";
+import { Loader2, Utensils, Dumbbell, ShoppingBasket, ListChecks, Settings, TrendingUp, UserCog } from "lucide-react";
 
 import { todayKey } from "./lib/time";
 import { fileToResizedBase64, fileToThumbDataUrl } from "./lib/image";
@@ -18,6 +18,7 @@ import { PantryTab } from "./features/pantry/PantryTab";
 import { ShoppingTab } from "./features/shopping/ShoppingTab";
 import { SettingsTab } from "./features/settings/SettingsTab";
 import { TrendsTab } from "./features/trends/TrendsTab";
+import { ProfileTab } from "./features/profile/ProfileTab";
 
 export default function App() {
   const [profile, setProfile] = useState(null);
@@ -30,6 +31,7 @@ export default function App() {
   const [workoutHistory, setWorkoutHistory] = useState({});
   const [exerciseLibrary, setExerciseLibrary] = useState([]);
   const [recipes, setRecipes] = useState([]);
+  const [aiSettings, setAiSettings] = useState({ provider: "anthropic", apiKey: "" });
   const [tab, setTab] = useState("today");
   const [busy, setBusy] = useState(null); // 'meal' | 'pantry' | 'suggest' | 'workout'
   const [suggestion, setSuggestion] = useState(null);
@@ -57,6 +59,7 @@ export default function App() {
       const woh = localStorage.getItem("workoutHistory");
       const el = localStorage.getItem("exerciseLibrary");
       const rc = localStorage.getItem("recipes");
+      const ai = localStorage.getItem("aiSettings");
       if (p) setProfile(JSON.parse(p));
       if (pa) setPantry(JSON.parse(pa));
       if (sh) setShopping(JSON.parse(sh));
@@ -67,6 +70,7 @@ export default function App() {
       if (woh) setWorkoutHistory(JSON.parse(woh));
       if (el) setExerciseLibrary(JSON.parse(el));
       if (rc) setRecipes(JSON.parse(rc));
+      if (ai) setAiSettings(JSON.parse(ai));
     } catch (e) { /* first run, nothing stored yet */ }
     setLoaded(true);
   }, []);
@@ -140,6 +144,8 @@ export default function App() {
 
   const saveRecipes = (r) => { setRecipes(r); persist("recipes", r); };
 
+  const saveAiSettings = (s) => { setAiSettings(s); persist("aiSettings", s); };
+
   const saveMealAsRecipe = (meal) => {
     const exists = recipes.some((r) => r.name.toLowerCase() === meal.name.toLowerCase());
     if (exists) return;
@@ -169,7 +175,7 @@ export default function App() {
     setError(null);
     try {
       const prompt = `Here is a recipe, either as a link or as text/caption copied from a website or social media post:\n\n"""${importText.trim()}"""\n\nRead it and return ONLY strict JSON, no markdown, in this shape:\n{"name": "recipe name", "ingredients": ["2 eggs", "2 tsp sugar", "1 cup flour"], "steps": ["step 1", "step 2"], "calories": number, "protein": number, "carbs": number, "fat": number}\nEstimate calories/protein/carbs/fat per serving as best you can from the ingredients. If it's a link you can't fetch, use your general knowledge of that kind of recipe if the name/description gives enough to go on, otherwise make a reasonable best-guess estimate and note assumptions are approximate.`;
-      const result = await askClaude({ text: prompt, maxTokens: 1200 });
+      const result = await askClaude({ text: prompt, maxTokens: 1200, apiKey: aiSettings.apiKey || undefined, provider: aiSettings.provider });
       const recipe = {
         id: Date.now() + Math.random(),
         name: result.name || "Imported recipe",
@@ -256,6 +262,8 @@ export default function App() {
       const result = await askClaude({
         imageBase64: b64,
         text: "Look at this photo of gym equipment or a workout machine. Identify what exercise/machine it is. Respond with ONLY raw JSON, no markdown: {\"exerciseName\": string (short common name, e.g. \"Leg Press\", \"Bench Press\", \"Lat Pulldown\")}",
+        apiKey: aiSettings.apiKey || undefined,
+        provider: aiSettings.provider,
       });
       setPendingExercise({ exerciseName: result.exerciseName || "Exercise", photo: thumb });
     } catch (err) {
@@ -332,6 +340,8 @@ export default function App() {
       ]);
       const result = await askClaude({
         imageBase64: b64,
+        apiKey: aiSettings.apiKey || undefined,
+        provider: aiSettings.provider,
         text: "You are a nutrition estimator. Look at this photo of food or a drink and estimate it. If it is a drink, estimate fluid volume in cups (1 cup = 240ml) as fluidCups, and set isDrink to true. Also identify any of these allergens present: peanuts, tree_nuts, shellfish, fish, eggs, soy, wheat, dairy. Return as an array of matching keys in allergens. Also estimate sugar in grams as sugar, and rough estimates for fiber (grams), iron (milligrams), vitaminC (milligrams), calcium (milligrams), and potassium (milligrams). Also set containsMeat, containsFish, containsEggs, containsDairy as booleans for dietary pattern checks. Respond with ONLY raw JSON, no markdown, no commentary, matching exactly: {\"name\": string (short meal or drink name), \"calories\": number, \"protein\": number (grams), \"carbs\": number (grams), \"fat\": number (grams), \"sodium\": number (milligrams), \"sugar\": number (grams), \"fiber\": number (grams), \"iron\": number (milligrams), \"vitaminC\": number (milligrams), \"calcium\": number (milligrams), \"potassium\": number (milligrams), \"isDrink\": boolean, \"fluidCups\": number, \"allergens\": array of strings, \"containsMeat\": boolean, \"containsFish\": boolean, \"containsEggs\": boolean, \"containsDairy\": boolean}",
       });
       const now = new Date();
@@ -355,6 +365,8 @@ export default function App() {
       const b64 = await fileToResizedBase64(file);
       const result = await askClaude({
         imageBase64: b64,
+        apiKey: aiSettings.apiKey || undefined,
+        provider: aiSettings.provider,
         text: "Look at this photo of a fridge, pantry, or cupboard. List the distinct food items you can identify. Respond with ONLY raw JSON, no markdown: {\"items\": [{\"name\": string, \"category\": string (one of protein, carb, veg, fruit, dairy, other)}]}",
       });
       const existingNames = new Set(pantry.map((p) => p.name.toLowerCase()));
@@ -398,6 +410,8 @@ export default function App() {
         : "";
       const result = await askClaude({
         text: `I need one meal suggestion to help hit my remaining daily targets: ${remaining.calories} calories, ${remaining.protein}g protein, ${remaining.carbs}g carbs, ${remaining.fat}g fat remaining today. My pantry/fridge currently has: ${pantry.length ? pantry.map((p) => p.name).join(", ") : "nothing logged yet"}. Suggest ONE realistic meal using mostly what I already have.${preferenceLine}${healthLine} Respond with ONLY raw JSON, no markdown: {"meal": string (name), "why": string (1 short sentence on how it fits my remaining macros), "ingredients": [string] (every ingredient needed for this exact meal WITH specific quantities so I know how much to actually make, e.g. "150g chicken breast", "1 cup cooked rice", "100g Greek yogurt", quantities should be sized so the meal totals the stated calories), "uses": [string] (pantry items it uses), "missing": [string] (up to 4 ingredients I'd need to buy, empty array if none)}`,
+        apiKey: aiSettings.apiKey || undefined,
+        provider: aiSettings.provider,
       });
       let addedIds = [];
       if (result.missing && result.missing.length) {
@@ -438,6 +452,8 @@ export default function App() {
         : "";
       const result = await askClaude({
         text: `I need a plan of meals to fill the REST of today, so that combined they roughly hit my remaining daily targets: ${remaining.calories} calories, ${remaining.protein}g protein, ${remaining.carbs}g carbs, ${remaining.fat}g fat remaining today. My pantry/fridge currently has: ${pantry.length ? pantry.map((p) => p.name).join(", ") : "nothing logged yet"}. Suggest 2 to 4 realistic remaining meals or snacks (fewer if it's late in the day) using mostly what I already have, that together add up close to my remaining targets without going over.${preferenceLine}${healthLine} Respond with ONLY raw JSON, no markdown: {"meals": [{"name": string, "why": string (1 short sentence), "calories": number, "ingredients": [string] (every ingredient needed for this exact meal WITH specific quantities, e.g. "2 eggs", "1 slice wholegrain toast", "1 banana", sized so the meal totals the stated calories), "uses": [string], "missing": [string] (ingredients to buy, empty array if none)}]}`,
+        apiKey: aiSettings.apiKey || undefined,
+        provider: aiSettings.provider,
       });
       const meals = result.meals || [];
       let addedIds = [];
@@ -538,6 +554,10 @@ export default function App() {
         {tab === "trends" && (
           <TrendsTab dayHistory={dayHistory} profile={profile} weightLog={weightLog} />
         )}
+
+        {tab === "profile" && (
+          <ProfileTab aiSettings={aiSettings} saveAiSettings={saveAiSettings} />
+        )}
       </div>
 
       <nav style={navStyle}>
@@ -547,6 +567,7 @@ export default function App() {
         <NavBtn icon={ListChecks} label="Shopping list" active={tab === "shopping"} onClick={() => setTab("shopping")} />
         <NavBtn icon={Settings} label="Goals" active={tab === "settings"} onClick={() => setTab("settings")} />
         <NavBtn icon={TrendingUp} label="Trends" active={tab === "trends"} onClick={() => setTab("trends")} />
+        <NavBtn icon={UserCog} label="Profile" active={tab === "profile"} onClick={() => setTab("profile")} />
       </nav>
     </div>
   );
