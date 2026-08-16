@@ -46,12 +46,18 @@ For deployments to work, `ANTHROPIC_API_KEY` must also be set in the Vercel proj
 ## Project structure
 
 ```
-api/ask-claude.js   Vercel serverless function, proxies to the Anthropic API server-side
-src/main.jsx         App entry point
-src/App.jsx          Main application component and UI
-index.html            Vite HTML entry
-vite.config.js         Vite/React build config
+api/ask-claude.js    Vercel serverless function, proxies to the Anthropic API server-side
+src/main.jsx          App entry point
+src/App.jsx            Orchestrator: state, effects, localStorage persistence, handlers
+src/lib/                 Pure helper functions (time, image, API, nutrition, exercise, svg)
+src/styles/               Shared style constants + the injected global stylesheet
+src/components/            Reusable UI components (gauges, cards, timers, forms, ...)
+src/features/                One folder per screen (onboarding, today, workouts, pantry, shopping, settings, trends)
+index.html                    Vite HTML entry
+vite.config.js                  Vite/React build config
 ```
+
+See [`documentation/`](./documentation) for a deeper look at the architecture, data model, and AI integration.
 
 ## Available scripts
 
